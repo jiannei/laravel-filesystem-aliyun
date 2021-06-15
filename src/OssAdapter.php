@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the jiannei/laravel-filesystem-aliyun.
+ *
+ * (c) jiannei <longjian.huang@foxmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Jiannei\Filesystem\Aliyun\Laravel;
 
@@ -97,7 +105,7 @@ class OssAdapter extends AbstractAdapter
     }
 
     /**
-     * upload specified in-memory data to an OSS object
+     * upload specified in-memory data to an OSS object.
      *
      * @param  $path
      * @param  $content
@@ -145,7 +153,7 @@ class OssAdapter extends AbstractAdapter
         }
 
         foreach (static::$metaOptions as $option) {
-            if (!$config->has($option)) {
+            if (! $config->has($option)) {
                 continue;
             }
             $options[static::$metaMap[$option]] = $config->get($option);
@@ -210,7 +218,7 @@ class OssAdapter extends AbstractAdapter
     }
 
     /**
-     * Check if the path contains only directories
+     * Check if the path contains only directories.
      *
      * @param  string  $path
      *
@@ -222,7 +230,7 @@ class OssAdapter extends AbstractAdapter
     }
 
     /**
-     * Uploads a local file to OSS
+     * Uploads a local file to OSS.
      *
      * @param $path
      * @param $filePath
@@ -272,7 +280,7 @@ class OssAdapter extends AbstractAdapter
      */
     public function update($path, $contents, Config $config)
     {
-        if (!$config->has('visibility') && !$config->has('ACL')) {
+        if (! $config->has('visibility') && ! $config->has('ACL')) {
             $config->set(static::$metaMap['ACL'], $this->getObjectACL($path));
         }
 
@@ -292,7 +300,6 @@ class OssAdapter extends AbstractAdapter
 
         return $metadata['visibility'] === AdapterInterface::VISIBILITY_PUBLIC ? OssClient::OSS_ACL_TYPE_PUBLIC_READ : OssClient::OSS_ACL_TYPE_PRIVATE;
     }
-
 
     /**
      * Get the visibility of a file.
@@ -329,7 +336,7 @@ class OssAdapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        if (!$this->copy($path, $newpath)) {
+        if (! $this->copy($path, $newpath)) {
             return false;
         }
 
@@ -375,7 +382,7 @@ class OssAdapter extends AbstractAdapter
             return false;
         }
 
-        return !$this->has($path);
+        return ! $this->has($path);
     }
 
     /**
@@ -427,7 +434,7 @@ class OssAdapter extends AbstractAdapter
     }
 
     /**
-     * 列举文件夹内文件列表；可递归获取子文件夹；
+     * 列举文件夹内文件列表；可递归获取子文件夹；.
      *
      * @param  string  $dirname  目录
      * @param  bool  $recursive  是否递归
@@ -461,7 +468,7 @@ class OssAdapter extends AbstractAdapter
             $objectList = $listObjectInfo->getObjectList(); // 文件列表
             $prefixList = $listObjectInfo->getPrefixList(); // 目录列表
 
-            if (!empty($objectList)) {
+            if (! empty($objectList)) {
                 foreach ($objectList as $objectInfo) {
                     $object['Prefix'] = $dirname;
                     $object['Key'] = $objectInfo->getKey();
@@ -474,10 +481,10 @@ class OssAdapter extends AbstractAdapter
                     $result['objects'][] = $object;
                 }
             } else {
-                $result["objects"] = [];
+                $result['objects'] = [];
             }
 
-            if (!empty($prefixList)) {
+            if (! empty($prefixList)) {
                 foreach ($prefixList as $prefixInfo) {
                     $result['prefix'][] = $prefixInfo->getPrefix();
                 }
@@ -489,7 +496,7 @@ class OssAdapter extends AbstractAdapter
             if ($recursive) {
                 foreach ($result['prefix'] as $pfix) {
                     $next = $this->listDirObjects($pfix, $recursive);
-                    $result["objects"] = array_merge($result['objects'], $next["objects"]);
+                    $result['objects'] = array_merge($result['objects'], $next['objects']);
                 }
             }
 
@@ -554,6 +561,7 @@ class OssAdapter extends AbstractAdapter
         $result = $this->readObject($path);
         $result['contents'] = (string) $result['raw_contents'];
         unset($result['raw_contents']);
+
         return $result;
     }
 
@@ -570,6 +578,7 @@ class OssAdapter extends AbstractAdapter
 
         $result['Body'] = $this->getOssClient()->getObject($this->bucket, $object);
         $result = array_merge($result, ['type' => 'file']);
+
         return $this->normalizeResponse($result, $path);
     }
 
@@ -611,7 +620,7 @@ class OssAdapter extends AbstractAdapter
     public function listContents($directory = '', $recursive = false)
     {
         $dirObjects = $this->listDirObjects($directory, true);
-        $contents = $dirObjects["objects"];
+        $contents = $dirObjects['objects'];
 
         $result = array_map([$this, 'normalizeResponse'], $contents);
         $result = array_filter($result, function ($value) {
@@ -632,6 +641,7 @@ class OssAdapter extends AbstractAdapter
     {
         $object = $this->getMetadata($path);
         $object['size'] = $object['content-length'];
+
         return $object;
     }
 
@@ -667,6 +677,7 @@ class OssAdapter extends AbstractAdapter
         if ($object = $this->getMetadata($path)) {
             $object['mimetype'] = $object['content-type'];
         }
+
         return $object;
     }
 
@@ -682,6 +693,7 @@ class OssAdapter extends AbstractAdapter
         if ($object = $this->getMetadata($path)) {
             $object['timestamp'] = strtotime($object['last-modified']);
         }
+
         return $object;
     }
 
@@ -694,7 +706,7 @@ class OssAdapter extends AbstractAdapter
      */
     public function getUrl($path)
     {
-        if (!$this->has($path)) {
+        if (! $this->has($path)) {
             throw new FileNotFoundException($path.' not found');
         }
 
