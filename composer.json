@@ -1,0 +1,30 @@
+{
+    "name": "jiannei\/laravel-filesystem-aliyun",
+    "description": "Flysystem adapter for the Aliyun oss storage.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jiannei",
+            "email": "longjian.huang@foxmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Jiannei\\Filesystem\\Aliyun\\Laravel\\": "src"
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.18",
+        "phpunit/phpunit": "^9.5"
+    },
+    "require": {
+        "aliyuncs/oss-sdk-php": "^2.4"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jiannei\\Filesystem\\Aliyun\\Laravel\\Providers\\ServiceProvider"
+            ]
+        }
+    }
+}
